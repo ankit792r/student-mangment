@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { StudentIdSchema } from "../../../schemas/student/student.schema"
+import { StudentIdSchema } from "../../../schemas/student.schema";
 
 export const StudentIdParamDtoSchema = z.object({
   id: StudentIdSchema

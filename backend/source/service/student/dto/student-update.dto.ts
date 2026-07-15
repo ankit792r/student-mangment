@@ -1,5 +1,5 @@
 import type z from "zod";
-import { StudentSchema } from "../../../schemas/student/student.schema";
+import { StudentSchema } from "../../../schemas/student.schema";
 
 export const StudentUpdateDtoSchema = StudentSchema.pick({
   address: true,

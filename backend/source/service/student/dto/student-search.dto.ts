@@ -1,5 +1,5 @@
 import z from "zod";
-import { StudentGenderSchema } from "../../../schemas/student/student.schema";
+import { StudentGenderSchema } from "../../../schemas/student.schema";
 
 export const StudentSearchQueryDtoSchema = z.object({
   search: z.string().optional(),

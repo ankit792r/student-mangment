@@ -7,22 +7,29 @@ import {
   UserBasicResponseDtoSchema,
   type UserBasicResponseDto,
 } from "./dto/user-response.dto";
-import type { UserRepositoryInterface } from "../../schemas/user/user.interface";
-import { createUserId, UserSchema, type User, type UserId } from "../../schemas/user/user.schema";
+import type { Collection } from "mongodb";
+import { createUserId, UserSchema, type User, type UserId } from "../../schemas/user.schema";
+
 
 export class UserService {
-  constructor(private readonly userRepository: UserRepositoryInterface) { }
+  constructor(private readonly userCollection: Collection<User>) { }
 
   async createUser(dto: UserCreateDto): Promise<User> {
-    if (await this.userRepository.existsByEmail(dto.email)) {
-      throw new AppError(UserError.UserAlreadyExists);
-    }
+    const existingUser =
+      (await this.userCollection.countDocuments({
+        email: dto.email,
+      })) > 0;
 
-    if (await this.userRepository.existsByUsername(dto.username)) {
-      throw new AppError(UserError.UsernameTaken);
-    }
+    if (existingUser) throw new AppError(UserError.UserAlreadyExists);
 
-    const user = UserSchema.parse({
+    const usernameTaken =
+      (await this.userCollection.countDocuments({
+        username: dto.username,
+      })) > 0;
+
+    if (usernameTaken) throw new AppError(UserError.UsernameTaken);
+
+    const newUserObject = UserSchema.parse({
       ...dto,
       _id: createUserId(),
       emailVerified: false,
@@ -31,111 +38,72 @@ export class UserService {
       updatedAt: new Date(),
     });
 
-    await this.userRepository.create(user);
+    const newUser = await this.userCollection.insertOne(newUserObject);
+    if (!newUser.acknowledged) throw new AppError(UserError.UserCreationFailed);
 
-    return user;
+    return newUserObject;
   }
 
   async updateBasicInfo(
     id: UserId,
     dto: UserUpdateDto,
   ): Promise<UserBasicResponseDto> {
-    const updated = await this.userRepository.updatePartial(id, {
-      ...dto,
-      updatedAt: new Date(),
-    });
-
-    if (!updated) {
+    const updatedUser = await this.userCollection.updateOne(
+      { _id: id },
+      { $set: { ...dto, updatedAt: new Date() } },
+    );
+    if (updatedUser.matchedCount === 0)
       throw new AppError(UserError.UserNotFound);
-    }
-
-    const user = await this.userRepository.findById(id);
-
-    return UserBasicResponseDtoSchema.parse(user);
+    return UserBasicResponseDtoSchema.parse(updatedUser);
   }
 
-  async getUserBasicInfoById(
-    id: UserId,
-  ): Promise<UserBasicResponseDto> {
-    const user = await this.userRepository.findById(id);
-
-    if (!user) {
-      throw new AppError(UserError.UserNotFound);
-    }
-
+  async getUserBasicInfoById(id: UserId): Promise<UserBasicResponseDto> {
+    const user = await this.userCollection.findOne({ _id: id });
+    if (!user) throw new AppError(UserError.UserNotFound);
     return UserBasicResponseDtoSchema.parse(user);
   }
 
   async getUserBasicInfoByUsername(
     username: string,
   ): Promise<UserBasicResponseDto> {
-    const user = await this.userRepository.findByUsername(username);
-
-    if (!user) {
-      throw new AppError(UserError.UserNotFound);
-    }
-
+    const user = await this.userCollection.findOne({ username });
+    if (!user) throw new AppError(UserError.UserNotFound);
     return UserBasicResponseDtoSchema.parse(user);
   }
 
-
-  async checkUsernameAvailability(
-    username: string,
-  ): Promise<boolean> {
-    const exists =
-      await this.userRepository.existsByUsername(username);
-
-    if (exists) {
-      throw new AppError(UserError.UsernameTaken);
-    }
-
+  async checkUsernameAvailability(username: string): Promise<boolean> {
+    const isAvailable =
+      (await this.userCollection.countDocuments({ username })) === 0;
+    if (!isAvailable) throw new AppError(UserError.UsernameTaken);
     return true;
   }
 
   async getUserByEmailOrThrow(email: string): Promise<User> {
-    const user = await this.userRepository.findByEmail(email);
-
-    if (!user) {
-      throw new AppError(UserError.UserNotFound);
-    }
-
+    const user = await this.userCollection.findOne({ email });
+    if (!user) throw new AppError(UserError.UserNotFound);
     return user;
   }
 
-  async getUserByUsernameOrThrow(
-    username: string,
-  ): Promise<User> {
-    const user =
-      await this.userRepository.findByUsername(username);
-
-    if (!user) {
-      throw new AppError(UserError.UserNotFound);
-    }
-
+  async getUserByUsernameOrThrow(username: string): Promise<User> {
+    const user = await this.userCollection.findOne({ username });
+    if (!user) throw new AppError(UserError.UserNotFound);
     return user;
   }
 
   async getUserByIdOrThrow(id: UserId): Promise<User> {
-    const user = await this.userRepository.findById(id);
-
-    if (!user) {
-      throw new AppError(UserError.UserNotFound);
-    }
-
+    const user = await this.userCollection.findOne({ _id: id });
+    if (!user) throw new AppError(UserError.UserNotFound);
     return user;
   }
 
-  async updateUserProfileImage(
-    id: UserId,
-    publicPath: string,
-  ): Promise<void> {
-    const updated = await this.userRepository.updatePartial(id, {
-      profileImage: publicPath,
-      updatedAt: new Date(),
-    });
-
-    if (!updated) {
-      throw new AppError(UserError.UserNotFound);
-    }
+  async updateUserProfileImage(id: UserId, publicPath: string): Promise<void> {
+    await this.userCollection.findOneAndUpdate(
+      { _id: id },
+      {
+        $set: {
+          profileImage: publicPath,
+        },
+      },
+    );
   }
 }

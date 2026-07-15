@@ -62,7 +62,7 @@ export default async function(fastify: FastifyInstance) {
     },
     handler: async (request, reply) => {
       const student =
-        await fastify.studentService.getStudentById(
+        await fastify.studentService.getStudentByIdOrThrow(
           request.params.id as any,
         );
 
