@@ -1,124 +1,78 @@
-import type { Student } from "@/service/student.service";
+import { Button } from "@/components/ui/button";
+
 import {
-  createColumnHelper,
-  type ColumnDef
-} from "@tanstack/react-table";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-const columnHelper = createColumnHelper<Student>()
+import { MoreHorizontal } from "lucide-react";
 
+import { createColumnHelper } from "@tanstack/react-table";
+import type { Student } from "@/service/student.service";
 
-export const columns: ColumnDef<Student, any>[] = [
-
-  {
-    accessorKey: "admissionNumber",
-
-    header: "Admission No",
-
-  },
-
-
-  {
-    accessorKey: "name",
-
-    header: "Name",
-
-  },
-
-
-  {
-    accessorKey: "course",
-
-    header: "Course",
-
-  },
-
-
-  {
-    accessorKey: "year",
-
-    header: "Year",
-
-  },
-
-  {
-    id: "actions",
-
-    header: "Actions",
-
-    cell: ({ row }) => {
-
-      const student =
-        row.original;
-
-
-      return (
-        <div>
-
-          <a href={`/students/${student._id}`}>
-            View
-          </a>
-
-
-          <a href={`/students/${student._id}/edit`}>
-            Edit
-          </a>
-
-
-        </div>
-      )
-
-    }
-
-  }
-]
+const helper = createColumnHelper<Student>();
 
 export const studentColumns = [
 
-  columnHelper.accessor("admissionNumber", {
+  helper.accessor("admissionNumber", {
     header: "Admission No",
   }),
 
-
-  columnHelper.accessor("name", {
+  helper.accessor("name", {
     header: "Name",
   }),
 
-
-  columnHelper.accessor("course", {
+  helper.accessor("course", {
     header: "Course",
   }),
 
-
-  columnHelper.accessor("year", {
+  helper.accessor("year", {
     header: "Year",
   }),
 
+  helper.display({
 
-  columnHelper.display({
-    header: "Actions",
     id: "actions",
+
+    header: "",
+
     cell: ({ row }) => {
 
-      const student =
-        row.original;
-
+      const student = row.original;
 
       return (
-        <div>
 
-          <a href={`/students/${student._id}`}>
-            View
-          </a>
+        <DropdownMenu>
 
+          <DropdownMenuTrigger>
 
-          <a href={`/students/${student._id}/edit`}>
-            Edit
-          </a>
+            <Button
+              variant="ghost"
+              size="icon"
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
 
+          </DropdownMenuTrigger>
 
-        </div>
-      )
+          <DropdownMenuContent align="end">
 
-    }
+            <DropdownMenuItem>
+              View
+            </DropdownMenuItem>
+
+            <DropdownMenuItem>
+              Edit
+            </DropdownMenuItem>
+
+          </DropdownMenuContent>
+
+        </DropdownMenu>
+
+      );
+    },
+
   }),
 ];

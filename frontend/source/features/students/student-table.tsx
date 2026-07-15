@@ -9,6 +9,7 @@ import {
   studentColumns,
 } from "./student-columns";
 import type { Student } from "@/service/student.service";
+import { Table, TableBody, TableHeader } from "@/components/ui/table";
 
 
 
@@ -25,105 +26,54 @@ export function StudentTable({
 }: Props) {
 
 
-  const table =
-    useReactTable({
-
-      data,
-
-      columns:
-        studentColumns,
-
-
-      getCoreRowModel:
-        getCoreRowModel(),
-
-    });
-
+  const table = useReactTable({
+    data,
+    columns: studentColumns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      pagination,
+    },
+    onPaginationChange: setPagination,
+  });
 
 
   return (
 
-    <table className="w-full">
+    <Table>
+
+      <TableHeader>
 
 
-      <thead>
+      </TableHeader>
 
-        {
-          table
-            .getHeaderGroups()
-            .map(group => (
+      <TableBody>
 
-              <tr key={group.id}>
+        {table.getRowModel().rows.length ? (
 
-                {
-                  group.headers.map(header => (
+          table.getRowModel()
 
-                    <th key={header.id}>
+        ) : (
 
-                      {
-                        flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )
-                      }
+          <TableRow>
 
-                    </th>
+            <TableCell
+              colSpan={studentColumns.length}
+              className="h-32 text-center text-muted-foreground"
+            >
 
-                  ))
+              No students found
 
-                }
+            </TableCell>
 
-              </tr>
+          </TableRow>
 
-            ))
+        )}
 
-        }
+      </TableBody>
 
-      </thead>
-
-
-      <tbody>
-
-        {
-          table
-            .getRowModel()
-            .rows
-            .map(row => (
-
-              <tr key={row.id}>
-
-                {
-                  row
-                    .getVisibleCells()
-                    .map(cell => (
-
-                      <td key={cell.id}>
-
-                        {
-                          flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )
-                        }
-
-                      </td>
-
-                    ))
-
-                }
-
-              </tr>
-
-            ))
-
-        }
-
-
-      </tbody>
-
-
-    </table>
-
+    </Table>
   )
 
 }

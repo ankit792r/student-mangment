@@ -21,6 +21,8 @@ export const StudentBasicResponseDtoSchema = StudentSchema.pick({
   _id: true,
   name: true,
   email: true,
+  course: true,
+  year: true,
   admissionNumber: true,
   profileImageUrl: true,
 });

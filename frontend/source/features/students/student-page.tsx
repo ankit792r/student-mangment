@@ -1,74 +1,54 @@
-import {
-  useState
-} from "react";
+import { useState } from "react";
 
+import { Card, CardContent } from "@/components/ui/card";
 
-import {
-  useStudents
-} from "@/hooks/student.hook";
 import { StudentTable } from "./student-table";
+import { StudentFilters } from "./student-filters";
+
+import { useStudents } from "@/hooks/student.hook";
 
 export default function StudentsPage() {
+  const [search, setSearch] = useState("");
 
-
-  const [
+  const { data = [], isLoading } = useStudents({
     search,
-    setSearch
-  ] = useState("");
-
-
-
-  const {
-    data = [],
-    isLoading
-  } = useStudents({
-
-    search,
-
   });
 
-
-
-  if (isLoading)
-    return <div>
-      Loading...
-    </div>
-
-
-
   return (
+    <div className="space-y-6 p-6">
 
-    <div>
+      <div className="flex items-center justify-between">
 
+        <div>
+          <h1 className="text-3xl font-semibold">
+            Students
+          </h1>
 
-      <h1>
-        Students
-      </h1>
+          <p className="text-muted-foreground">
+            Manage all students
+          </p>
+        </div>
 
+      </div>
 
+      <Card>
 
-      <input
+        <CardContent className="space-y-4 pt-6">
 
-        value={search}
+          <StudentFilters
+            value={search}
+            onChange={setSearch}
+          />
 
-        onChange={
-          e => setSearch(e.target.value)
-        }
+          <StudentTable
+            data={data}
+            loading={isLoading}
+          />
 
-      />
+        </CardContent>
 
-
-
-      <StudentTable
-
-        data={data}
-
-      />
-
-
+      </Card>
 
     </div>
-
-  )
-
+  );
 }
