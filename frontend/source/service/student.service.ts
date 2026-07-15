@@ -31,11 +31,16 @@ export type UpdateStudentDto = Partial<CreateStudentDto>;
 
 export interface StudentSearchQuery {
   search?: string;
-  course?: string;
-  year?: string;
-  gender?: StudentGender;
+  page?: number;
+  limit?: number;
+  sortBy?:
+  | "name"
+  | "course"
+  | "year";
+  sortOrder?:
+  | "asc"
+  | "desc";
 }
-
 
 export interface StudentAnalytics {
   totalStudents: number;
