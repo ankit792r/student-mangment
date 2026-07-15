@@ -1,5 +1,5 @@
 import type z from "zod";
-import { StudentSchema } from "../../../schemas/student/student.schema";
+import { StudentSchema } from "../../../schemas/student.schema";
 
 export const StudentFullResponseDtoSchema = StudentSchema.pick({
   _id: true,
@@ -21,6 +21,8 @@ export const StudentBasicResponseDtoSchema = StudentSchema.pick({
   _id: true,
   name: true,
   email: true,
+  course: true,
+  year: true,
   admissionNumber: true,
   profileImageUrl: true,
 });

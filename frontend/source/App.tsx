@@ -1,4 +1,4 @@
-import StudentsPage from "./features/students/student-page";
+import StudentsPage from "./features/students";
 
 function App() {
 

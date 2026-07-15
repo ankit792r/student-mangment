@@ -31,11 +31,9 @@ export const env = createEnv({
     CORS_ORIGIN: z
       .string()
       .transform((val) => val.split(","))
-      .default(["http://localhost:3000"]),
+      .default(["http://localhost:3000", "http://localhost:5173"]),
 
-    DEFAULT_DB: z.enum(["mongodb", "postgres"]).default("postgres"),
     MONGODB_URI: z.string().default("mongodb://root:root@localhost:27017"),
-    POSTGRES_URI: z.string().default("postgres://root:root@localhost:5432/test-db"),
     DB_NAME: z.string().default("test-db"),
 
     DEFAULT_CACHE_IMPL: z.enum(["redis", "memory"]).default("memory"),

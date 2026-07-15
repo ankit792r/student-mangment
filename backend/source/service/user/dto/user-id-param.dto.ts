@@ -1,6 +1,5 @@
-
 import { z } from "zod";
-import { UserIdSchema } from "../../../schemas/user/user.schema";
+import { UserIdSchema } from "../../../schemas/user.schema";
 
 export const UserIdParamDtoSchema = z.object({
     id: UserIdSchema,

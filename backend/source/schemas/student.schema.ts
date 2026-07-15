@@ -1,6 +1,6 @@
 import z from "zod";
-import { createIdFactoryFromIdSchema, idSchema } from "../id-factory";
-import type { CollectionConfig } from "../../modules/mongodb/collection";
+import { createIdFactoryFromIdSchema, idSchema } from "./id-factory";
+import type { CollectionConfig } from "./collection";
 
 
 export const StudentIdSchema = idSchema({ brand: "StudentId", prefix: "s_" });

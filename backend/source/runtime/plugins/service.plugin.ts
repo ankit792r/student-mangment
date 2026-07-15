@@ -10,15 +10,15 @@ export default fp(
     fastify.log.info("plugging: SERVICE in app");
 
     const userService =
-      overrides.userService ?? new UserService(fastify.userRepository);
+      overrides.userService ?? new UserService(fastify.userCollection);
     const authService = overrides.authService ?? new AuthService(userService);
-    const studentService = overrides.studentService ?? new StudentService(fastify.studentRepository);
+    const studentService = overrides.studentService ?? new StudentService(fastify.studentCollection);
 
     fastify.decorate("userService", userService);
     fastify.decorate("authService", authService);
     fastify.decorate("studentService", studentService);
   },
-  { name: "service", dependencies: ["repository", "cache", "storage"] },
+  { name: "service", dependencies: ["collection", "cache", "storage"] },
 );
 
 declare module "fastify" {
