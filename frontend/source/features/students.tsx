@@ -51,6 +51,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import AddStudentDialog from "./add-student";
 
 export default function StudentsPage() {
   const [search, setSearch] = useState("");
@@ -131,7 +132,7 @@ export default function StudentsPage() {
 
           return (
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+              <DropdownMenuTrigger >
                 <Button
                   variant="ghost"
                   className="h-8 w-8 p-0"
@@ -205,10 +206,7 @@ export default function StudentsPage() {
 
             </div>
 
-            <Button>
-              Add Student
-            </Button>
-
+            <AddStudentDialog />
           </div>
 
         </CardHeader>
