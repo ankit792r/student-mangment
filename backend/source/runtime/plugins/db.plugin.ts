@@ -3,9 +3,9 @@ import fp from "fastify-plugin";
 import type { DependencyOverrides } from "../app";
 import { createMongoClient } from "../../configs/mongo";
 import { env } from "../../configs/env";
-import { createPostgresClient } from "../../configs/postgres";
+import { createPostgresPool } from "../../configs/postgres";
 import type { MongoClient } from "mongodb";
-import type { Client as PgClient } from "pg";
+import type { Pool } from "pg";
 
 export default fp(async (fastify: FastifyInstance, overrides: DependencyOverrides) => {
   fastify.log.info("plugging: DB into app");
@@ -18,9 +18,13 @@ export default fp(async (fastify: FastifyInstance, overrides: DependencyOverride
   }
 
   if (env.DEFAULT_DB === "postgres") {
+    const pgPool = createPostgresPool();
+    // Verify connection
+    await pgPool.query("SELECT 1");
+
     fastify.decorate(
       "postgresPool",
-      overrides.postgresClient ?? (await createPostgresClient()),
+      overrides.postgresPool ?? pgPool,
     );
   }
 }, { name: "db", });
@@ -28,6 +32,6 @@ export default fp(async (fastify: FastifyInstance, overrides: DependencyOverride
 declare module "fastify" {
   interface FastifyInstance {
     mongoClient?: MongoClient;
-    postgresClient?: PgClient;
+    postgresPool?: Pool;
   }
 }

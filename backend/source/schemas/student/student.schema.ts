@@ -1,7 +1,6 @@
 import z from "zod";
 import { createIdFactoryFromIdSchema, idSchema } from "../id-factory";
 import type { CollectionConfig } from "../../modules/mongodb/collection";
-import type { TableConfig } from "../../modules/postgres/table";
 
 
 export const StudentIdSchema = idSchema({ brand: "StudentId", prefix: "s_" });
@@ -34,11 +33,3 @@ export const StudentCollectionConfig: CollectionConfig<Student> = {
   schema: StudentSchema,
   schemaVersion: 1,
 };
-
-export const StudentTableConfig: TableConfig<Student> = {
-  name: "students",
-  primaryKey: "_id",
-  schema: StudentSchema,
-};
-
-

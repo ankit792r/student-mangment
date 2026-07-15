@@ -8,14 +8,14 @@ import type { MongoClient } from "mongodb";
 import type { ICache } from "../modules/cache/cache-interface";
 import type { UserService } from "../service/user/user.service";
 import type { AuthService } from "../service/auth/auth.service";
-import type { Client } from "pg";
+import type { Pool } from "pg";
 import type { UserRepositoryInterface } from "../schemas/user/user.interface";
 import type { StudentRepositoryInterface } from "../schemas/student/student.interface";
 import type { StudentService } from "../service/student/student.service";
 
 export type DependencyOverrides = {
   mongoClient?: MongoClient;
-  postgresClient?: Client;
+  postgresPool?: Pool;
 
   redisClient?: RedisClientType;
   defaultCache?: ICache;

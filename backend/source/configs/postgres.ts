@@ -1,4 +1,4 @@
-import { Client } from "pg";
+import { Client, Pool } from "pg";
 import { env } from "./env.ts";
 
 export const createPostgresClient = async () => {
@@ -10,3 +10,11 @@ export const createPostgresClient = async () => {
   await client.connect();
   return client;
 };
+
+
+export function createPostgresPool(): Pool {
+  return new Pool({
+    connectionString: env.POSTGRES_URI,
+    database: env.DB_NAME
+  });
+}
