@@ -90,7 +90,7 @@ export const studentService = {
   ): Promise<Student> {
 
     const response =
-      await axios.put<Student>(
+      await axios.patch<Student>(
         `${STUDENT_URL}/${id}`,
         data,
       );
@@ -155,12 +155,12 @@ export const studentService = {
       await axios.post<string>(
         `${STUDENT_URL}/${id}/update-profile`,
         formData,
-        {
-          headers: {
-            "Content-Type":
-              "multipart/form-data",
-          },
-        },
+        // {
+        //   headers: {
+        //     "Content-Type":
+        //       "multipart/form-data",
+        //   },
+        // },
       );
 
     return response.data;

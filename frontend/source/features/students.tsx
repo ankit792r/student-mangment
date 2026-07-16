@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { useState } from "react";
 
@@ -19,8 +17,10 @@ import {
 
 import {
   ArrowUpDown,
+  Eye,
   MoreHorizontal,
   Search,
+  SquarePen,
 } from "lucide-react";
 
 import {
@@ -52,6 +52,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import AddStudentDialog from "./add-student";
+import EditStudentDialog from "./edit-student";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function StudentsPage() {
   const [search, setSearch] = useState("");
@@ -61,9 +63,46 @@ export default function StudentsPage() {
   });
 
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [editingStudent, setEditingStudent] =
+    useState<Student | null>(null);
 
   const columns = React.useMemo<ColumnDef<Student>[]>(
     () => [
+      {
+        id: "student",
+        header: "Student",
+        cell: ({ row }) => {
+          const student = row.original;
+
+          return (
+            <div className="flex items-center gap-3">
+              <Avatar>
+                <AvatarImage
+                  src={student.profileImageUrl}
+                />
+                <AvatarFallback>
+                  {student.name
+                    .split(" ")
+                    .map((x) => x[0])
+                    .join("")
+                    .slice(0, 2)}
+                </AvatarFallback>
+              </Avatar>
+
+              <div>
+                <p className="font-medium">
+                  {student.name}
+                </p>
+
+                <p className="text-xs text-muted-foreground">
+                  {student.admissionNumber}
+                </p>
+              </div>
+            </div>
+          );
+        },
+      },
+
       {
         accessorKey: "admissionNumber",
         header: ({ column }) => (
@@ -122,6 +161,18 @@ export default function StudentsPage() {
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         ),
+        cell: ({ row }) => {
+          const year = row.original.year;
+
+          const map: Record<string, string> = {
+            "1": "First",
+            "2": "Second",
+            "3": "Third",
+            "4": "Fourth",
+          };
+
+          return `${map[year]} Year`;
+        }
       },
 
       {
@@ -143,18 +194,20 @@ export default function StudentsPage() {
 
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
-                  onClick={() =>
-                  (window.location.href = `/students/${student._id}`)
-                  }
+                // onClick={() =>
+                //   (window.location.href = `/students/${student._id}`)
+                // }
                 >
+                  <Eye className="mr-2 h-4 w-4" />
                   View
+
+
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
-                  onClick={() =>
-                  (window.location.href = `/students/${student._id}/edit`)
-                  }
+                  onClick={() => setEditingStudent(student)}
                 >
+                  <SquarePen className="mr-2 h-4 w-4" />
                   Edit
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -163,7 +216,7 @@ export default function StudentsPage() {
         },
       },
     ],
-    []
+    [setEditingStudent]
   );
 
   const table = useReactTable({
@@ -211,9 +264,9 @@ export default function StudentsPage() {
 
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="space-y-6">
 
-          <div className="mb-6">
+          <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 
             <div className="relative max-w-sm">
 
@@ -231,12 +284,13 @@ export default function StudentsPage() {
           </div>
 
           {isLoading ? (
-            <div className="space-y-3">
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
+            <div className="space-y-2">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Skeleton
+                  key={i}
+                  className="h-12 w-full"
+                />
+              ))}
             </div>
           ) : (
             <>
@@ -287,11 +341,18 @@ export default function StudentsPage() {
 
                         <TableCell
                           colSpan={columns.length}
-                          className="h-24 text-center"
+                          className="h-40 text-center"
                         >
-                          No students found.
-                        </TableCell>
+                          <div className="space-y-2">
+                            <p className="font-medium">
+                              No students found
+                            </p>
 
+                            <p className="text-sm text-muted-foreground">
+                              Try changing your search or add a new student.
+                            </p>
+                          </div>
+                        </TableCell>
                       </TableRow>
                     )}
 
@@ -304,9 +365,15 @@ export default function StudentsPage() {
               <div className="mt-4 flex items-center justify-between">
 
                 <div className="text-sm text-muted-foreground">
-                  Showing{" "}
-                  {table.getRowModel().rows.length}{" "}
-                  student(s)
+                  Showing
+                  <strong>
+                    {table.getRowModel().rows.length}
+                  </strong>
+                  of
+                  <strong>
+                    {data.length}
+                  </strong>
+                  students
                 </div>
 
                 <div className="flex gap-2">
@@ -344,6 +411,13 @@ export default function StudentsPage() {
 
       </Card>
 
+      <EditStudentDialog
+        student={editingStudent}
+        open={!!editingStudent}
+        onOpenChange={(open) => {
+          if (!open) setEditingStudent(null);
+        }}
+      />
     </div>
   );
 }

@@ -21,7 +21,7 @@ export const env = createEnv({
     APP_NAME: z.string().default("bonefire"),
 
     PORT: z.coerce.number().default(8000),
-    HOST: z.string().default("localhost"),
+    HOST: z.string().default("0.0.0.0"),
     NODE_ENV: z
       .enum(["development", "production", "test"])
       .default("development"),
