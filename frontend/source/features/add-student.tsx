@@ -43,7 +43,7 @@ type StudentForm = {
 
 export default function AddStudentDialog() {
   const [open, setOpen] = useState(false);
-  const { mutateAsync, isPending } = useCreateStudent();
+  const { mutateAsync } = useCreateStudent();
 
   const [form, setForm] = useState<StudentForm>({
     name: "",

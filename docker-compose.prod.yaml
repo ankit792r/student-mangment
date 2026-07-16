@@ -1,9 +1,7 @@
 services:
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: frontend
+    image: sys74/student-frontend:latest
+    container_name: frontend_container
     restart: unless-stopped
     ports:
       - "80:80"
@@ -11,17 +9,15 @@ services:
       - backend
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: backend
+    image: sys74/student-backend:latest
+    container_name: backend_container
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "8000:8000"
 
   valkey:
     image: valkey/valkey:8-alpine
-    container_name: bonefire-valkey
+    container_name: valkey_container
     restart: unless-stopped
     ports:
       - "6379:6379"
